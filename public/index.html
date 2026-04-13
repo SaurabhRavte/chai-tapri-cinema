@@ -1,141 +1,141 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Stellar Seat Booking</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap");
-      body {
-        font-family: "Outfit", sans-serif;
-        background-color: #0f172a;
-        color: #f8fafc;
-      }
-    </style>
-  </head>
-  <body
-    class="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
-  >
-    <div
-      class="max-w-7xl w-full bg-slate-800/80 backdrop-blur-xl rounded-3xl shadow-2xl p-10 border border-slate-700/50"
-    >
-      <div class="text-center mb-10">
-        <h1
-          class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 mb-4 tracking-tight"
-        >
-          ChaiCode Cinema - Now Showing<br />
-          <br />
-          <span class="text-red-400">
-            <span class="font-bold">Dhurandhar The Revenge</span>
-          </span>
-        </h1>
-        <p class="text-slate-400 text-lg">Jassi ko ghar ki yaad kyu nhi aai?</p>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chai Tapri Cinema</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- ── Auth Modal ── -->
+  <div id="authModal" class="modal-backdrop">
+    <div class="modal">
+      <div class="flex gap-2 mb-6">
+        <button id="tabLogin" class="btn btn-gold flex-1" onclick="switchTab('login')">Login</button>
+        <button id="tabRegister" class="btn btn-ghost flex-1" onclick="switchTab('register')">Register</button>
       </div>
 
-      <div class="flex justify-center mb-10">
-        <div
-          class="bg-slate-900/50 rounded-full px-6 py-3 border border-slate-700 flex gap-8 items-center"
-        >
-          <div class="flex items-center gap-3">
-            <div
-              class="w-4 h-4 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.6)]"
-            ></div>
-            <span class="text-slate-300 font-medium tracking-wide"
-              >Available</span
-            >
-          </div>
-          <div class="w-px h-6 bg-slate-700"></div>
-          <div class="flex items-center gap-3">
-            <div
-              class="w-4 h-4 rounded-full bg-rose-500/20 border border-rose-500/50"
-            ></div>
-            <span class="text-slate-400 font-medium tracking-wide">Booked</span>
-          </div>
+      <!-- Login -->
+      <div id="loginForm">
+        <p class="bebas text-2xl mb-5">Welcome Back</p>
+        <div class="flex flex-col gap-3">
+          <input type="email" id="loginEmail" placeholder="Email" />
+          <input type="password" id="loginPassword" placeholder="Password" />
+          <p id="loginErr" class="err"></p>
+          <button class="btn btn-gold w-full mt-1" onclick="handleLogin()">Login</button>
         </div>
       </div>
 
-      <div class="flex justify-center">
-        <div
-          class="bg-slate-900/40 p-8 rounded-2xl border border-slate-700/50 shadow-inner"
-        >
-          <table
-            id="tbl"
-            class="border-separate border-spacing-4 mx-auto"
-          ></table>
+      <!-- Register -->
+      <div id="registerForm" style="display:none">
+        <p class="bebas text-2xl mb-5">Create Account</p>
+        <div class="flex flex-col gap-3">
+          <input type="text" id="regName" placeholder="Full Name" />
+          <input type="email" id="regEmail" placeholder="Email" />
+          <input type="password" id="regPassword" placeholder="Password (min 6 chars)" />
+          <p id="regErr" class="err"></p>
+          <button class="btn btn-gold w-full mt-1" onclick="handleRegister()">Register</button>
         </div>
       </div>
     </div>
+  </div>
 
-    <script>
-      async function run() {
-        const tbl = document.getElementById("tbl");
-        const res = await fetch("/seats");
-        const resarray = await res.json();
-        const j = resarray.sort((a, b) => a.id - b.id);
-        let tr;
-        for (let i = 0; i < j.length; i++) {
-          if (i % 8 === 0) tr = document.createElement("tr");
+  <!-- ── Book Confirm Modal ── -->
+  <div id="bookModal" class="modal-backdrop">
+    <div class="modal">
+      <p class="bebas text-2xl mb-1">Confirm Booking</p>
+      <p class="text-sm text-gray-500 mb-5">Review your seat before confirming.</p>
+      <div class="rounded-xl p-4 border border-[var(--border)] bg-black flex justify-between items-center mb-5">
+        <div>
+          <div class="text-xs text-gray-600 mb-0.5">SEAT NO.</div>
+          <div id="confirmSeatId" class="bebas text-4xl" style="color: var(--gold)"></div>
+        </div>
+        <div class="text-right">
+          <div class="text-xs text-gray-600 mb-0.5">MOVIE</div>
+          <div class="text-sm font-semibold">Spider-Man: Brand New Day</div>
+          <div class="text-xs text-gray-500 mt-0.5">Tonight, 8:00 PM</div>
+        </div>
+      </div>
+      <div class="border-t border-dashed border-[var(--border)] pt-4 flex justify-between text-sm">
+        <span class="text-gray-500">Booking as</span>
+        <span id="confirmName" class="font-semibold text-white"></span>
+      </div>
+      <div class="flex gap-3 mt-5">
+        <button class="btn btn-ghost flex-1" onclick="closeBookModal()">Cancel</button>
+        <button class="btn btn-gold flex-1" onclick="confirmBook()">Confirm &amp; Book</button>
+      </div>
+    </div>
+  </div>
 
-          const td = document.createElement("td");
+  <!-- ── Header ── -->
+  <header class="sticky top-0 z-50 border-b border-[var(--border)] px-6 py-3 flex items-center justify-between"
+    style="background: rgba(10,10,10,0.96); backdrop-filter: blur(10px);">
+    <div class="flex items-center gap-2.5">
+      <div class="w-7 h-7 rounded-md flex items-center justify-center bebas text-base" style="background: var(--red);">C
+      </div>
+      <span class="bebas text-lg tracking-widest">ChaiCode Cinema</span>
+    </div>
+    <div id="userArea"></div>
+  </header>
 
-          // Base aesthetic classes - added 'relative group' for tooltip positioning
-          const baseClasses =
-            "w-32 h-32 rounded-2xl text-center align-middle text-2xl font-bold transition-all duration-300 select-none relative group";
+  <!-- ── Main ── -->
+  <main class="max-w-4xl mx-auto px-4 py-10 ">
 
-          if (j[i].isbooked) {
-            td.className = `${baseClasses} bg-rose-500/10 text-rose-500/60 border border-rose-500/20 cursor-not-allowed`;
-            td.innerHTML = `
-                    <span class="relative z-10">${j[i].id}</span>
-                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-4 py-2 bg-slate-900 border border-slate-700 text-sm text-slate-300 rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap shadow-2xl z-50 pointer-events-none font-normal shadow-[0_10px_25px_rgba(0,0,0,0.5)]">
-                        Booked by: <span class="font-bold text-white ml-1">${j[i].name}</span>
-                        <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-[1px] border-[6px] border-transparent border-t-slate-700"></div>
-                        <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-[2px] border-[5px] border-transparent border-t-slate-900"></div>
-                    </div>
-                `;
-          } else {
-            td.className = `${baseClasses} bg-emerald-500 text-white border-2 border-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.3)] cursor-pointer hover:bg-emerald-400 hover:-translate-y-1.5 hover:shadow-[0_10px_25px_rgba(16,185,129,0.5)] active:scale-95 active:shadow-[0_0_10px_rgba(16,185,129,0.3)]`;
-            td.innerHTML = `<span class="relative z-10">${j[i].id}</span>`;
-          }
+    <!-- Movie info -->
+    <div class="flex gap-4 items-start mb-10">
+      <div>
+        <div class="text-xs tracking-widest text-gray-600 uppercase mb-1">Now Showing</div>
+        <h1 class="bebas text-5xl leading-none">Spider-Man: <span style="color: var(--gold);">Brand New Day</span></h1>
+        <p class="text-gray-600 text-sm mt-1 italic">With great power comes great responsibility.</p>
+      </div>
+    </div>
 
-          td.addEventListener("click", async function (e) {
-            const currentTd = e.currentTarget;
-            if (currentTd.classList.contains("cursor-not-allowed")) {
-              return; // Seat is already taken
-            }
+    <!-- Legend -->
+    <div class="flex gap-3 mb-8 flex-wrap">
+      <div
+        class="flex items-center gap-2 text-xs text-gray-500 bg-[var(--surface)] border border-[var(--border)] rounded-full px-3 py-1.5">
+        <span class="w-2.5 h-2.5 rounded-full bg-green-500 inline-block"></span> Available
+      </div>
+      <div
+        class="flex items-center gap-2 text-xs text-gray-500 bg-[var(--surface)] border border-[var(--border)] rounded-full px-3 py-1.5">
+        <span class="w-2.5 h-2.5 rounded-full bg-red-900 inline-block"></span> Booked
+      </div>
+      <div
+        class="flex items-center gap-2 text-xs text-gray-500 bg-[var(--surface)] border border-[var(--border)] rounded-full px-3 py-1.5">
+        <span class="w-2.5 h-2.5 rounded-full inline-block" style="background:var(--gold)"></span> Selected
+      </div>
+    </div>
 
-            try {
-              const id = j[i].id; // Safe from loop closure
-              const name = prompt("Enter your name");
-              if (!name) return;
+    <!-- Screen indicator -->
+    <div class="mb-6 text-center">
+      <div class="inline-block w-72 h-1.5 rounded-full"
+        style="background: linear-gradient(90deg, transparent, #555, transparent);"></div>
+      <div class="text-xs text-gray-700 tracking-widest uppercase mt-1">Screen</div>
+    </div>
 
-              const res = await fetch(`/${id}/${name}`, { method: "PUT" });
-              const data = await res.json();
+    <!-- Seats -->
+    <div id="seatsContainer" class="flex flex-col items-center gap-2">
+      <p class="text-gray-600 text-sm">Loading seats...</p>
+    </div>
 
-              if (data.error) {
-                alert("FAILED! Couldn't book! already booked.");
-              } else {
-                alert("Booked successfully!");
-                // Visually transition to booked state upon success
-                currentTd.className = `${baseClasses} bg-rose-500/10 text-rose-500/60 border border-rose-500/20 cursor-not-allowed`;
-                currentTd.innerHTML = `
-                            <span class="relative z-10">${id}</span>
-                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-4 py-2 bg-slate-900 border border-slate-700 text-sm text-slate-300 rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap shadow-2xl z-50 pointer-events-none font-normal shadow-[0_10px_25px_rgba(0,0,0,0.5)]">
-                                Booked by: <span class="font-bold text-white ml-1">${name}</span>
-                                <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-[1px] border-[6px] border-transparent border-t-slate-700"></div>
-                                <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-[2px] border-[5px] border-transparent border-t-slate-900"></div>
-                            </div>
-                        `;
-              }
-            } catch (ex) {
-              alert("error booking " + ex);
-            }
-          });
-          tr.appendChild(td);
-          tbl.appendChild(tr);
-        }
-      }
-      run();
-    </script>
-  </body>
+  </main>
+
+  <!-- ── Footer ── -->
+  <footer class="text-center py-6 text-xs text-gray-700">
+    Made with ❤️ by <a href="https://github.com/SaurabhRavte" ...>Saurabh Ravte</a>
+  </footer>
+  <script src="script.js"></script>
+</body>
+
 </html>

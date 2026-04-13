@@ -17,7 +17,7 @@ export const db = drizzle(pool, { schema });
 
 const connectDB = async () => {
   const client = await pool.connect();
-  console.log(`PostgreSQL connected: ${client.database}`);
+  console.log(`Database connected: ${client.database}`);
   client.release();
 };
 
