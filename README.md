@@ -97,7 +97,7 @@ book-my-ticket/
 ### Step 1 — Clone the repo
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/chai-tapri-cinema.git
+git clone https://github.com/SaurabhRavte/chai-tapri-cinema.git
 cd chai-tapri-cinema
 ```
 
