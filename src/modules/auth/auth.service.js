@@ -46,6 +46,7 @@ export const login = async ({ email, password }) => {
 
   return { user: safeUser, accessToken, refreshToken };
 };
+
 export const refresh = async (token) => {
   if (!token) throw ApiError.unauthorized("Refresh token missing");
 
@@ -62,4 +63,10 @@ export const refresh = async (token) => {
 
 export const logout = async (userId) => {
   await updateRefreshToken(userId, null);
+};
+
+export const getMe = async (userId) => {
+  const user = await findUserById(userId);
+  if (!user) throw ApiError.notFound("User not found");
+  return user;
 };

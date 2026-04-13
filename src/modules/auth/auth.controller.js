@@ -19,4 +19,21 @@ const login = async (req, res) => {
   ApiResponse.ok(res, "Login successful", { user, accessToken });
 };
 
-export { register, login };
+const refreshToken = async (req, res) => {
+  const token = req.cookies?.refreshToken;
+  const { accessToken } = await authService.refresh(token);
+  ApiResponse.ok(res, "Token refreshed", { accessToken });
+};
+
+const logout = async (req, res) => {
+  await authService.logout(req.user.id);
+  res.clearCookie("refreshToken");
+  ApiResponse.ok(res, "Logged out successfully");
+};
+
+const getMe = async (req, res) => {
+  const user = await authService.getMe(req.user.id);
+  ApiResponse.ok(res, "User profile", user);
+};
+
+export { register, login, refreshToken, logout, getMe };
